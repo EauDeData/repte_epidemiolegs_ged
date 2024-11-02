@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Ranking</title>
+    <style>
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">Report Ranking by Single Day Error</h2>
+<table id="rankingTable">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>NIU</th>
+            <th>Single Day Error</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Rows will be populated here by JavaScript -->
+    </tbody>
+</table>
+
+<script>
+    async function fetchRanking() {
+        try {
+            const response = await fetch('http://158.109.8.44:8080/covid_chalenge/load_ranking');
+            if (!response.ok) {
+                throw new Error('Failed to fetch ranking data');
+            }
+            const ranking = await response.json();
+
+            const rankingTableBody = document.getElementById('rankingTable').querySelector('tbody');
+            rankingTableBody.innerHTML = ''; // Clear existing data
+
+            ranking.forEach((report, index) => {
+                const row = rankingTableBody.insertRow();
+                row.insertCell(0).textContent = index + 1;
+                row.insertCell(1).textContent = report.team_name;
+                row.insertCell(2).textContent = report.niu;
+                row.insertCell(3).textContent = report.single_day_error.toFixed(3);
+            });
+        } catch (error) {
+            console.error('Error loading ranking:', error);
+        }
+    }
+
+    // Fetch ranking data on page load
+    window.onload = fetchRanking;
+</script>
+
+</body>
+</html>
